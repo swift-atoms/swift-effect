@@ -1,7 +1,7 @@
-import Hash_Primitives
+import Hash
 import Testing
 
-@testable import Effect_Primitives
+@testable import Effect
 
 @Suite
 struct `Effect.Outcome Tests` {

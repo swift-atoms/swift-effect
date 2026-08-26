@@ -1,6 +1,6 @@
 import Testing
 
-@testable import Effect_Primitives
+@testable import Effect
 
 private struct SimpleEffect: Effect.`Protocol` {
 }

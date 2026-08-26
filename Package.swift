@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-effect-primitives",
+    name: "swift-effect",
     platforms: [
         .macOS(.v27),
         .iOS(.v27),
@@ -13,50 +13,50 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Effect Primitives",
-            targets: ["Effect Primitives"]
+            name: "Effect",
+            targets: ["Effect"]
         ),
         .library(
-            name: "Effect Primitives Test Support",
-            targets: ["Effect Primitives Test Support"]
+            name: "Effect Test Support",
+            targets: ["Effect Test Support"]
         ),
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-primitives/swift-dependency-primitives.git",
+            url: "https://github.com/swift-molecules/swift-dependency.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-equation-primitives.git",
+            url: "https://github.com/swift-molecules/swift-equation.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-hash-primitives.git",
+            url: "https://github.com/swift-molecules/swift-hash.git",
             branch: "main"
         ),
     ],
     targets: [
         .target(
-            name: "Effect Primitives",
+            name: "Effect",
             dependencies: [
-                .product(name: "Dependency Primitives", package: "swift-dependency-primitives"),
-                .product(name: "Equation Primitives", package: "swift-equation-primitives"),
-                .product(name: "Hash Primitives", package: "swift-hash-primitives"),
+                .product(name: "Dependency", package: "swift-dependency"),
+                .product(name: "Equation", package: "swift-equation"),
+                .product(name: "Hash", package: "swift-hash"),
             ]
         ),
         .target(
-            name: "Effect Primitives Test Support",
+            name: "Effect Test Support",
             dependencies: [
-                "Effect Primitives",
-                .product(name: "Hash Primitives Test Support", package: "swift-hash-primitives"),
+                "Effect",
+                .product(name: "Hash Test Support", package: "swift-hash"),
             ],
             path: "Tests/Support"
         ),
         .testTarget(
-            name: "Effect Primitives Tests",
+            name: "Effect Tests",
             dependencies: [
-                "Effect Primitives",
-                "Effect Primitives Test Support",
+                "Effect",
+                "Effect Test Support",
             ]
         ),
     ],

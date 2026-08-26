@@ -1,5 +1,5 @@
-public import Equation_Primitives
-public import Hash_Primitives
+public import Equation
+public import Hash
 
 extension Effect {
 

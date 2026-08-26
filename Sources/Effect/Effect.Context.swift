@@ -1,4 +1,4 @@
-public import Dependency_Primitives
+public import Dependency
 
 extension Effect {
 

@@ -1,4 +1,4 @@
-# swift-effect-primitives
+# swift-effect
 
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
@@ -22,7 +22,7 @@ Algebraic-effect primitives — effect declarations, resumable continuations, sc
 A handler must resume its continuation exactly once. Because `Effect.Continuation.One` is `~Copyable`, a second `resume` — or a forgotten one — is a compile error instead of a runtime bug:
 
 ```swift
-import Effect_Primitives
+import Effect
 
 // An operation the surrounding computation cannot satisfy on its own.
 struct ReadConfig: Effect.`Protocol` {
@@ -56,7 +56,7 @@ await handler.handle(ReadConfig(), continuation: continuation)
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-primitives/swift-effect-primitives.git", branch: "main")
+    .package(url: "https://github.com/swift-molecules/swift-effect.git", branch: "main")
 ]
 ```
 
@@ -64,7 +64,7 @@ dependencies: [
 .target(
     name: "YourTarget",
     dependencies: [
-        .product(name: "Effect Primitives", package: "swift-effect-primitives")
+        .product(name: "Effect", package: "swift-effect")
     ]
 )
 ```
@@ -79,8 +79,8 @@ Two library products over a single source module.
 
 | Product | When to import |
 |---------|----------------|
-| `Effect Primitives` | Declaring effects, handlers, continuations, and outcomes in library or application code. |
-| `Effect Primitives Test Support` | Test targets exercising effect handling; re-exports the main module alongside `Hash Primitives Test Support`. |
+| `Effect` | Declaring effects, handlers, continuations, and outcomes in library or application code. |
+| `Effect Test Support` | Test targets exercising effect handling; re-exports the main module alongside `Hash Test Support`. |
 
 Key types in the `Effect` namespace:
 
