@@ -17,47 +17,34 @@ let package = Package(
             targets: ["Effect"]
         ),
         .library(
-            name: "Effect Test Support",
-            targets: ["Effect Test Support"]
+            name: "Effect Standard Library Integration",
+            targets: ["Effect Standard Library Integration"]
+        ),
+        .library(
+            name: "Effect Apple Foundation Integration",
+            targets: ["Effect Apple Foundation Integration"]
         ),
     ],
-    dependencies: [
-        .package(
-            url: "https://github.com/swift-molecules/swift-dependency.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-equation.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-hash.git",
-            branch: "main"
-        ),
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "Effect",
-            dependencies: [
-                .product(name: "Dependency", package: "swift-dependency"),
-                .product(name: "Equation", package: "swift-equation"),
-                .product(name: "Hash", package: "swift-hash"),
-            ]
+            dependencies: []
         ),
         .target(
-            name: "Effect Test Support",
+            name: "Effect Standard Library Integration",
+            dependencies: ["Effect"]
+        ),
+        .target(
+            name: "Effect Apple Foundation Integration",
             dependencies: [
                 "Effect",
-                .product(name: "Hash Test Support", package: "swift-hash"),
-            ],
-            path: "Tests/Support"
+                "Effect Standard Library Integration",
+            ]
         ),
         .testTarget(
             name: "Effect Tests",
-            dependencies: [
-                "Effect",
-                "Effect Test Support",
-            ]
+            dependencies: ["Effect"]
         ),
     ],
     swiftLanguageModes: [.v6]

@@ -11,9 +11,8 @@ Algebraic-effect primitives — effect declarations, resumable continuations, sc
 - **Effect declarations** — Conform a type to `Effect.\`Protocol\``; it carries typed `Arguments`, `Value`, and `Failure`, with `Void` arguments and `Never` failure defaulted.
 - **One-shot continuations** — `Effect.Continuation.One` is `~Copyable`, so the compiler rejects both a second `resume` and a forgotten one.
 - **Multi-shot continuations** — `Effect.Continuation.Multi` resumes repeatedly, supporting backtracking and non-deterministic control flow.
-- **Scoped handler registration** — `Effect.Context.with` installs handlers in task-local storage, and nested scopes override outer ones.
 - **Linear resources end to end** — Effects, handlers, continuations, and outcomes admit `~Copyable` `Value` and `Arguments`, so owning resources pass through without being copied.
-- **Handling outcomes** — `Effect.Outcome` records whether a handler resumed, threw, or aborted, with equality and hashing for `~Copyable` values via the ecosystem's `Equation` and `Hash` protocols.
+- **Handling outcomes** — `Effect.Outcome` records whether a handler resumed, threw, or aborted.
 
 ---
 
@@ -75,12 +74,13 @@ Requires Swift 6.3.1. Platform minimums: macOS 26, iOS 26, tvOS 26, watchOS 26, 
 
 ## Architecture
 
-Two library products over a single source module.
+Three library products over a single domain module and its integration modules.
 
 | Product | When to import |
 |---------|----------------|
 | `Effect` | Declaring effects, handlers, continuations, and outcomes in library or application code. |
-| `Effect Test Support` | Test targets exercising effect handling; re-exports the main module alongside `Hash Test Support`. |
+| `Effect Standard Library Integration` | Extensions of and conformances to Swift standard library types. |
+| `Effect Apple Foundation Integration` | Foundation-facing integration; the only module that imports Foundation. |
 
 Key types in the `Effect` namespace:
 
@@ -90,8 +90,9 @@ Key types in the `Effect` namespace:
 | `Effect.Handler.\`Protocol\`` / `Effect.Handler.Sync` | Interprets an effect, receiving the effect and a one-shot continuation. |
 | `Effect.Continuation.One` | `~Copyable` one-shot continuation; exactly-once resumption is compiler-enforced. |
 | `Effect.Continuation.Multi` | Multi-shot continuation for backtracking and non-deterministic branches. |
-| `Effect.Context` | Task-local handler registration via `with(_:operation:)`, with nested-scope override. |
 | `Effect.Outcome` | Captures whether a handler resumed, threw, or aborted. |
+
+Scoped handler registration (`Effect.Context`, backed by `Dependency`) lives in `swift-effect-dependency`; `Equation` and `Hash` conformances for `Effect.Outcome` live in `swift-effect-equation` and `swift-effect-hash`.
 
 ---
 
