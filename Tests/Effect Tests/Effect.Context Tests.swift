@@ -1,4 +1,5 @@
 import Dependency
+import Effect
 import Testing
 
 @testable import Effect

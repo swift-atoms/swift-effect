@@ -1,3 +1,4 @@
+import Effect
 import Testing
 
 @testable import Effect

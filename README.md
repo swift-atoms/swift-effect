@@ -56,7 +56,7 @@ await handler.handle(ReadConfig(), continuation: continuation)
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-molecules/swift-effect.git", branch: "main")
+    .package(url: "https://github.com/swift-atoms/swift-effect.git", branch: "main")
 ]
 ```
 
@@ -75,12 +75,11 @@ Requires Swift 6.3.1. Platform minimums: macOS 26, iOS 26, tvOS 26, watchOS 26, 
 
 ## Architecture
 
-Two library products over a single source module.
+One library product over a single source module.
 
 | Product | When to import |
 |---------|----------------|
 | `Effect` | Declaring effects, handlers, continuations, and outcomes in library or application code. |
-| `Effect Test Support` | Test targets exercising effect handling; re-exports the main module alongside `Hash Test Support`. |
 
 Key types in the `Effect` namespace:
 

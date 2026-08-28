@@ -16,22 +16,18 @@ let package = Package(
             name: "Effect",
             targets: ["Effect"]
         ),
-        .library(
-            name: "Effect Test Support",
-            targets: ["Effect Test Support"]
-        ),
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-molecules/swift-dependency.git",
+            url: "https://github.com/swift-atoms/swift-dependency.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-equation.git",
+            url: "https://github.com/swift-atoms/swift-equation.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-hash.git",
+            url: "https://github.com/swift-atoms/swift-hash.git",
             branch: "main"
         ),
     ],
@@ -40,23 +36,14 @@ let package = Package(
             name: "Effect",
             dependencies: [
                 .product(name: "Dependency", package: "swift-dependency"),
-                .product(name: "Equation", package: "swift-equation"),
-                .product(name: "Hash", package: "swift-hash"),
+                .product(name: "Equation Protocol", package: "swift-equation"),
+                .product(name: "Hash Protocol", package: "swift-hash"),
             ]
-        ),
-        .target(
-            name: "Effect Test Support",
-            dependencies: [
-                "Effect",
-                .product(name: "Hash Test Support", package: "swift-hash"),
-            ],
-            path: "Tests/Support"
         ),
         .testTarget(
             name: "Effect Tests",
             dependencies: [
-                "Effect",
-                "Effect Test Support",
+                .target(name: "Effect"),
             ]
         ),
     ],
