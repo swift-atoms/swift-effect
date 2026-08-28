@@ -90,4 +90,40 @@ struct `Effect.Outcome Tests` {
         #expect(outcome.result == nil)
     }
 
+    @Test
+    func `equatable and hashable are intrinsic`() {
+        enum Failure: Swift.Error, Hashable {
+            case failed
+        }
+
+        let resumed: Effect.Outcome<Int, Failure> = .resumed(1)
+        let equal: Effect.Outcome<Int, Failure> = .resumed(1)
+        let threw: Effect.Outcome<Int, Failure> = .threw(.failed)
+        let aborted: Effect.Outcome<Int, Failure> = .aborted
+
+        #expect(resumed == equal)
+        #expect(resumed != threw)
+        #expect(threw != aborted)
+        #expect(Set([resumed, equal, threw, aborted]).count == 3)
+    }
+
+    @Test
+    func `noncopyable payload can be equated and hashed`() {
+        struct Value: ~Copyable, Equatable, Hashable {
+            let rawValue: Int
+        }
+
+        let lhs: Effect.Outcome<Value, Never> = .resumed(Value(rawValue: 1))
+        let rhs: Effect.Outcome<Value, Never> = .resumed(Value(rawValue: 1))
+
+        let areEqual = lhs == rhs
+        #expect(areEqual)
+
+        var lhsHasher = Hasher()
+        var rhsHasher = Hasher()
+        lhs.hash(into: &lhsHasher)
+        rhs.hash(into: &rhsHasher)
+        #expect(lhsHasher.finalize() == rhsHasher.finalize())
+    }
+
 }
