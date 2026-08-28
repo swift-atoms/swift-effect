@@ -1,5 +1,5 @@
-public import Equation_Primitives
-public import Hash_Primitives
+public import Equation_Protocol
+public import Hash_Protocol
 
 extension Effect {
 
@@ -16,8 +16,10 @@ extension Effect {
 extension Effect.Outcome: Copyable where Value: Copyable {}
 extension Effect.Outcome: Sendable where Value: Sendable & ~Copyable, Failure: Sendable {}
 
-extension Effect.Outcome: Equation.`Protocol`
-where Value: Equation.`Protocol` & ~Copyable, Failure: Equation.`Protocol` {
+extension Effect.Outcome: Equation::Equation.`Protocol`
+where Value: Equation::Equation.`Protocol` & ~Copyable,
+    Failure: Equation::Equation.`Protocol`
+{
 
     public static func == (lhs: borrowing Self, rhs: borrowing Self) -> Bool {
         switch lhs {
@@ -45,8 +47,8 @@ where Value: Equation.`Protocol` & ~Copyable, Failure: Equation.`Protocol` {
     }
 }
 
-extension Effect.Outcome: Hash.`Protocol`
-where Value: Hash.`Protocol` & ~Copyable, Failure: Hash.`Protocol` {
+extension Effect.Outcome: Hash::Hash.`Protocol`
+where Value: Hash::Hash.`Protocol` & ~Copyable, Failure: Hash::Hash.`Protocol` {
 
     public borrowing func hash(into hasher: inout Hasher) {
         switch self {
@@ -65,7 +67,7 @@ where Value: Hash.`Protocol` & ~Copyable, Failure: Hash.`Protocol` {
 }
 
 extension Effect.Outcome: Swift.Hashable
-where Value: Hash.`Protocol` & ~Copyable, Failure: Hash.`Protocol` {}
+where Value: Hash::Hash.`Protocol` & ~Copyable, Failure: Hash::Hash.`Protocol` {}
 
 extension Effect.Outcome where Value: Copyable {
 

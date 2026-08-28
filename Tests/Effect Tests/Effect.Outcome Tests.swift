@@ -1,7 +1,7 @@
-import Hash_Primitives
+import Effect
 import Testing
 
-@testable import Effect_Primitives
+@testable import Effect
 
 @Suite
 struct `Effect.Outcome Tests` {
@@ -137,7 +137,7 @@ struct `Effect.Outcome Tests` {
 
     @Test
     func `hashable consistency`() {
-        struct E: Swift.Error, Hash.`Protocol` {}
+        struct E: Swift.Error, Hash::Hash.`Protocol` {}
 
         let a: Effect.Outcome<Int, E> = .resumed(42)
         let b: Effect.Outcome<Int, E> = .resumed(42)

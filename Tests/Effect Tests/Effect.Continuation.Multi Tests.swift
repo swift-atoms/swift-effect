@@ -1,6 +1,7 @@
+import Effect
 import Testing
 
-@testable import Effect_Primitives
+@testable import Effect
 
 @Suite
 struct `Effect.Continuation.Multi Tests` {
