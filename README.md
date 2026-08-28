@@ -2,7 +2,7 @@
 
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
-Algebraic-effect primitives — effect declarations, resumable continuations, scoped handlers, and handling outcomes — where one-shot continuations are `~Copyable` so exactly-once resumption is checked at compile time.
+Algebraic-effect primitives — effect declarations, resumable continuations, handlers, and handling outcomes — where one-shot continuations are `~Copyable` so exactly-once resumption is checked at compile time.
 
 ---
 
@@ -11,9 +11,8 @@ Algebraic-effect primitives — effect declarations, resumable continuations, sc
 - **Effect declarations** — Conform a type to `Effect.\`Protocol\``; it carries typed `Arguments`, `Value`, and `Failure`, with `Void` arguments and `Never` failure defaulted.
 - **One-shot continuations** — `Effect.Continuation.One` is `~Copyable`, so the compiler rejects both a second `resume` and a forgotten one.
 - **Multi-shot continuations** — `Effect.Continuation.Multi` resumes repeatedly, supporting backtracking and non-deterministic control flow.
-- **Scoped handler registration** — `Effect.Context.with` installs handlers in task-local storage, and nested scopes override outer ones.
 - **Linear resources end to end** — Effects, handlers, continuations, and outcomes admit `~Copyable` `Value` and `Arguments`, so owning resources pass through without being copied.
-- **Handling outcomes** — `Effect.Outcome` records whether a handler resumed, threw, or aborted, with equality and hashing for `~Copyable` values via the ecosystem's `Equation` and `Hash` protocols.
+- **Handling outcomes** — `Effect.Outcome` records whether a handler resumed, threw, or aborted, with intrinsic `Result`, value, error, and abortion conveniences.
 
 ---
 
@@ -89,7 +88,6 @@ Key types in the `Effect` namespace:
 | `Effect.Handler.\`Protocol\`` / `Effect.Handler.Sync` | Interprets an effect, receiving the effect and a one-shot continuation. |
 | `Effect.Continuation.One` | `~Copyable` one-shot continuation; exactly-once resumption is compiler-enforced. |
 | `Effect.Continuation.Multi` | Multi-shot continuation for backtracking and non-deterministic branches. |
-| `Effect.Context` | Task-local handler registration via `with(_:operation:)`, with nested-scope override. |
 | `Effect.Outcome` | Captures whether a handler resumed, threw, or aborted. |
 
 ---

@@ -17,28 +17,11 @@ let package = Package(
             targets: ["Effect"]
         ),
     ],
-    dependencies: [
-        .package(
-            url: "https://github.com/swift-atoms/swift-dependency.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-atoms/swift-equation.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-atoms/swift-hash.git",
-            branch: "main"
-        ),
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "Effect",
-            dependencies: [
-                .product(name: "Dependency", package: "swift-dependency"),
-                .product(name: "Equation Protocol", package: "swift-equation"),
-                .product(name: "Hash Protocol", package: "swift-hash"),
-            ]
+            dependencies: []
         ),
         .testTarget(
             name: "Effect Tests",
