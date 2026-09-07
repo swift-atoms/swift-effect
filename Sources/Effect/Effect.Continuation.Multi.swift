@@ -1,6 +1,6 @@
 extension Effect.Continuation {
 
-    public struct Multi<Value, Failure: Swift.Error>: __EffectContinuation, Sendable {
+    public struct Multi<Value, Failure: Swift.Error>: Effect.Continuation.`Protocol`, Sendable {
         @usableFromInline
         internal let _resume: @Sendable (sending Result<Value, Failure>) async -> Void
 
