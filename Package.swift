@@ -13,8 +13,8 @@ let package = Package(
     ],
     products: [
         .library(name: "Effect", targets: ["Effect"]),
-        .library(name: "Effect Standard Library Integration", targets: ["Effect Standard Library Integration"]),
-        .library(name: "Effect Foundation Library Integration", targets: ["Effect Foundation Library Integration"]),
+
+        .library(name: "Effect Foundation Integration", targets: ["Effect Foundation Integration"]),
         .library(name: "Effect Test Support", targets: ["Effect Test Support"]),
     ],
     dependencies: [],
@@ -25,20 +25,13 @@ let package = Package(
             ],
             path: "Sources/Effect"
         ),
+        
         .target(
-            name: "Effect Standard Library Integration",
+            name: "Effect Foundation Integration",
             dependencies: [
                 .target(name: "Effect"),
             ],
-            path: "Sources/Effect Standard Library Integration"
-        ),
-        .target(
-            name: "Effect Foundation Library Integration",
-            dependencies: [
-                .target(name: "Effect"),
-                .target(name: "Effect Standard Library Integration"),
-            ],
-            path: "Sources/Effect Foundation Library Integration"
+            path: "Sources/Effect Foundation Integration"
         ),
         .target(
             name: "Effect Test Support",
@@ -52,8 +45,7 @@ let package = Package(
             dependencies: [
                 .target(name: "Effect"),
                 .target(name: "Effect Test Support"),
-                .target(name: "Effect Standard Library Integration"),
-                .target(name: "Effect Foundation Library Integration"),
+                .target(name: "Effect Foundation Integration"),
             ],
             path: "Tests/Effect Tests"
         ),
