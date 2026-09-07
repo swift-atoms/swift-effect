@@ -1,21 +1,14 @@
+import Effect
 import Testing
 
-@testable import Effect
-
-@Suite
-struct `Effect.Continuation.Multi Tests` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
-
+extension Effect.`Continuations deliver results` {
     @Test
-    func `can be resumed multiple times`() async {
-
-        nonisolated(unsafe) var values: [Int] = []
-
+    func `Multi-shot delivery preserves the order of awaited calls`() async {
+        let values = Self.Recorder<Int>()
         let continuation = Effect.Continuation.multi { (result: Result<Int, Never>) async in
-            if case .success(let value) = result {
-                unsafe values.append(value)
+            await Task.yield()
+            switch result {
+            case .success(let value): await values.append(value)
             }
         }
 
@@ -23,76 +16,75 @@ struct `Effect.Continuation.Multi Tests` {
         await continuation.resume(returning: 2)
         await continuation.resume(returning: 3)
 
-        #expect(unsafe values == [1, 2, 3])
+        #expect(await values.values == [1, 2, 3])
     }
 
     @Test
-    func `can be copied and resumed from copies`() async {
-
-        nonisolated(unsafe) var count = 0
-
+    func `Multi-shot copies invoke the same callback independently`() async {
+        let calls = Self.Counter()
         let original = Effect.Continuation.multi { (_: Result<Void, Never>) async in
-            unsafe count += 1
+            calls.increment()
         }
-
-        let copy1 = original
-        let copy2 = original
+        let first = original
+        let second = original
 
         await original.resume()
-        await copy1.resume()
-        await copy2.resume()
+        await first.resume()
+        await second.resume()
 
-        #expect(unsafe count == 3)
+        #expect(calls.value == 3)
     }
 
     @Test
-    func `resume with result success`() async {
-
-        nonisolated(unsafe) var results: [Result<String, Never>] = []
-
-        let continuation = Effect.Continuation.multi { (result: Result<String, Never>) async in
-            unsafe results.append(result)
+    func `Multi-shot delivery preserves interleaved results and typed failures`() async {
+        let results = Self.Recorder<Result<Int, Self.Failure>>()
+        let continuation = Effect.Continuation.multi { (result: Result<Int, Self.Failure>) async in
+            await results.append(result)
         }
 
-        await continuation.resume(with: .success("a"))
-        await continuation.resume(with: .success("b"))
+        await continuation.resume(with: .success(1))
+        await continuation.resume(throwing: .rejected(7))
+        await continuation.resume(with: .failure(.rejected(8)))
+        await continuation.resume(returning: 2)
 
-        #expect(unsafe results.count == 2)
+        #expect(await results.values == [.success(1), .failure(.rejected(7)), .failure(.rejected(8)), .success(2)])
     }
 
     @Test
-    func `resume with void convenience`() async {
-
-        nonisolated(unsafe) var count = 0
-
-        let continuation: Effect.Continuation.Multi<Void, Never> = Effect.Continuation.multi {
-            _ async in
-            unsafe count += 1
-        }
-
-        await continuation.resume()
-        await continuation.resume()
-
-        #expect(unsafe count == 2)
-    }
-
-    @Test
-    func `resume with errors`() async {
-        struct Failure: Swift.Error, Equatable {
-            let code: Int
-        }
-
-        nonisolated(unsafe) var errors: [Failure] = []
-
-        let continuation = Effect.Continuation.multi { (result: Result<Void, Failure>) async in
-            if case .failure(let error) = result {
-                unsafe errors.append(error)
+    func `Fallible multi-shot void delivery remains reusable after failure`() async {
+        let results = Self.Recorder<Bool>()
+        let continuation = Effect.Continuation.multi { (result: Result<Void, Self.Failure>) async in
+            switch result {
+            case .success: await results.append(true)
+            case .failure: await results.append(false)
             }
         }
 
-        await continuation.resume(throwing: Failure(code: 1))
-        await continuation.resume(throwing: Failure(code: 2))
+        await continuation.resume()
+        await continuation.resume(throwing: .rejected(7))
+        await continuation.resume()
 
-        #expect(unsafe errors == [Failure(code: 1), Failure(code: 2)])
+        #expect(await results.values == [true, false, true])
+    }
+
+    @Test
+    func `Concurrent multi-shot copies deliver every invocation once`() async {
+        let values = Self.Recorder<Int>()
+        let continuation = Effect.Continuation.multi { (result: Result<Int, Never>) async in
+            await Task.yield()
+            switch result {
+            case .success(let value): await values.append(value)
+            }
+        }
+
+        await withTaskGroup(of: Void.self) { group in
+            for value in 0..<64 {
+                group.addTask {
+                    await continuation.resume(returning: value)
+                }
+            }
+        }
+
+        #expect(await values.values.sorted() == Array(0..<64))
     }
 }

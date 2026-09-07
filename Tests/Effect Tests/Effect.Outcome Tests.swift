@@ -1,128 +1,98 @@
+import Effect
 import Testing
 
-@testable import Effect
-
-@Suite
-struct `Effect.Outcome Tests` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
-
-    @Test
-    func `resumed case stores value`() {
-        let outcome: Effect.Outcome<String, Never> = .resumed("hello")
-
-        #expect(outcome.value == "hello")
-        #expect(outcome.error == nil)
-        #expect(!outcome.isAborted)
-    }
-
-    @Test
-    func `threw case stores error`() {
-        struct Failure: Swift.Error, Equatable {
-            let code: Int
-        }
-
-        let outcome: Effect.Outcome<String, Failure> = .threw(Failure(code: 42))
-
-        #expect(outcome.value == nil)
-        #expect(outcome.error == Failure(code: 42))
-        #expect(!outcome.isAborted)
-    }
-
-    @Test
-    func `aborted case`() {
-        let outcome: Effect.Outcome<String, Never> = .aborted
-
-        #expect(outcome.value == nil)
-        #expect(outcome.error == nil)
-        #expect(outcome.isAborted)
-    }
-
-    @Test
-    func `init from Result success`() {
-        let result: Result<Int, Never> = .success(42)
-        let outcome = Effect.Outcome(result)
-
-        #expect(outcome.value == 42)
-        if case .resumed(let value) = outcome {
-            #expect(value == 42)
-        } else {
-            Issue.record("Expected resumed case")
-        }
-    }
-
-    @Test
-    func `init from Result failure`() {
-        struct E: Swift.Error, Equatable {}
-
-        let result: Result<Int, E> = .failure(E())
-        let outcome = Effect.Outcome(result)
-
-        if case .threw(let error) = outcome {
-            #expect(error == E())
-        } else {
-            Issue.record("Expected threw case")
-        }
-    }
-
-    @Test
-    func `result property for resumed`() {
-        let outcome: Effect.Outcome<String, Never> = .resumed("test")
-
-        #expect(outcome.result == .success("test"))
-    }
-
-    @Test
-    func `result property for threw`() {
-        struct E: Swift.Error, Equatable {}
-
-        let outcome: Effect.Outcome<String, E> = .threw(E())
-
-        #expect(outcome.result == .failure(E()))
-    }
-
-    @Test
-    func `result property for aborted returns nil`() {
-        let outcome: Effect.Outcome<String, Never> = .aborted
-
-        #expect(outcome.result == nil)
-    }
-
-    @Test
-    func `equatable and hashable are intrinsic`() {
+extension Effect {
+    @Suite
+    struct `Outcomes preserve result distinctions` {
         enum Failure: Swift.Error, Hashable {
-            case failed
+            case rejected(Int)
         }
 
-        let resumed: Effect.Outcome<Int, Failure> = .resumed(1)
-        let equal: Effect.Outcome<Int, Failure> = .resumed(1)
-        let threw: Effect.Outcome<Int, Failure> = .threw(.failed)
-        let aborted: Effect.Outcome<Int, Failure> = .aborted
+        struct Resource: ~Copyable, Hashable {
+            let value: Int
+        }
 
-        #expect(resumed == equal)
-        #expect(resumed != threw)
-        #expect(threw != aborted)
-        #expect(Set([resumed, equal, threw, aborted]).count == 3)
+        static let examples: [Effect.Outcome<Int, Failure>] = [
+            .resumed(1), .resumed(2), .threw(.rejected(1)), .threw(.rejected(2)), .aborted,
+        ]
+    }
+}
+
+extension Effect.`Outcomes preserve result distinctions` {
+    @Test(arguments: [Result<Int, Failure>.success(42), .failure(.rejected(7))])
+    func `Result conversion preserves the branch and payload`(_ result: Result<Int, Failure>) {
+        let outcome = Effect.Outcome(result)
+
+        #expect(outcome.result == result)
+        #expect(!outcome.isAborted)
+        switch result {
+        case .success(let value):
+            #expect(outcome.value == value)
+            #expect(outcome.error == nil)
+        case .failure(let error):
+            #expect(outcome.value == nil)
+            #expect(outcome.error == error)
+        }
     }
 
     @Test
-    func `noncopyable payload can be equated and hashed`() {
-        struct Value: ~Copyable, Equatable, Hashable {
-            let rawValue: Int
-        }
+    func `Aborted outcomes expose neither a result nor either payload`() {
+        let outcome: Effect.Outcome<Int, Self.Failure> = .aborted
 
-        let lhs: Effect.Outcome<Value, Never> = .resumed(Value(rawValue: 1))
-        let rhs: Effect.Outcome<Value, Never> = .resumed(Value(rawValue: 1))
-
-        let areEqual = lhs == rhs
-        #expect(areEqual)
-
-        var lhsHasher = Hasher()
-        var rhsHasher = Hasher()
-        lhs.hash(into: &lhsHasher)
-        rhs.hash(into: &rhsHasher)
-        #expect(lhsHasher.finalize() == rhsHasher.finalize())
+        #expect(outcome.isAborted)
+        #expect(outcome.result == nil)
+        #expect(outcome.value == nil)
+        #expect(outcome.error == nil)
     }
 
+    @Test(arguments: 0..<5, 0..<5)
+    func `Equality distinguishes every case and payload`(_ left: Int, _ right: Int) {
+        #expect((Self.examples[left] == Self.examples[right]) == (left == right))
+    }
+
+    @Test
+    func `Equal outcomes have equal hashes and collapse in a set`() {
+        for outcome in Self.examples {
+            let equal = outcome
+            var first = Hasher()
+            var second = Hasher()
+            outcome.hash(into: &first)
+            equal.hash(into: &second)
+            #expect(first.finalize() == second.finalize())
+        }
+
+        #expect(Set(Self.examples + Self.examples).count == Self.examples.count)
+    }
+
+    @Test
+    func `Equality and hashing borrow noncopyable outcomes`() {
+        let first: Effect.Outcome<Self.Resource, Self.Failure> = .resumed(Self.Resource(value: 42))
+        let equal: Effect.Outcome<Self.Resource, Self.Failure> = .resumed(Self.Resource(value: 42))
+        let different: Effect.Outcome<Self.Resource, Self.Failure> = .resumed(Self.Resource(value: 43))
+        let failure: Effect.Outcome<Self.Resource, Self.Failure> = .threw(.rejected(7))
+        let aborted: Effect.Outcome<Self.Resource, Self.Failure> = .aborted
+
+        let matches = first == equal
+        let differs = first != different && first != failure && failure != aborted
+        #expect(matches)
+        #expect(differs)
+        let firstIsAborted = first.isAborted
+        let abortedIsAborted = aborted.isAborted
+        #expect(!firstIsAborted)
+        #expect(abortedIsAborted)
+
+        var firstHasher = Hasher()
+        var equalHasher = Hasher()
+        first.hash(into: &firstHasher)
+        equal.hash(into: &equalHasher)
+        #expect(firstHasher.finalize() == equalHasher.finalize())
+
+        switch consume first {
+        case .resumed(let resource):
+            let value = resource.value
+            #expect(value == 42)
+        case .threw: Issue.record("Expected the retained value")
+        case .aborted: Issue.record("Expected the retained value")
+        }
+    }
 }

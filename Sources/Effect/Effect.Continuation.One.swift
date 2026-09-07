@@ -1,6 +1,6 @@
 extension Effect.Continuation {
 
-    public struct One<Value: ~Copyable, Failure: Swift.Error>: ~Copyable, Sendable {
+    public struct One<Value: ~Copyable, Failure: Swift.Error>: ~Copyable, Effect.Continuation.`Protocol`, Sendable {
         @usableFromInline
         internal let _onValue: @Sendable (consuming sending Value) async -> Void
 

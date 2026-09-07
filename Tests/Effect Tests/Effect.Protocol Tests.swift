@@ -1,75 +1,109 @@
+import Effect
 import Testing
 
-@testable import Effect
+extension Effect {
+    @Suite
+    struct `Effects describe handler requests` {
+        struct Ping: Effect.`Protocol` {
+            typealias Value = String
+        }
 
-private struct SimpleEffect: Effect.`Protocol` {
-}
+        struct PingHandler: Effect.Handler.`Protocol` {
+            typealias Handled = Ping
 
-extension SimpleEffect {
-    typealias Value = String
-    typealias Failure = Never
-}
+            func handle(
+                _ effect: borrowing Ping,
+                continuation: consuming Effect.Continuation.One<String, Never>
+            ) async {
+                let _: Void = effect.arguments
+                await continuation.resume(returning: "pong")
+            }
+        }
 
-private struct EffectWithArguments: Effect.`Protocol` {
-    let x: Int
-    let y: Int
-}
+        struct Addition: Effect.`Protocol` {
+            typealias Arguments = (left: Int, right: Int)
+            typealias Value = Int
 
-extension EffectWithArguments {
-    typealias Arguments = (x: Int, y: Int)
-    typealias Value = Int
-    typealias Failure = Never
+            enum Failure: Swift.Error, Equatable {
+                case negativeInput(Int)
+            }
 
-    var arguments: (x: Int, y: Int) { (x, y) }
-}
+            let left: Int
+            let right: Int
 
-private struct FallibleEffect: Effect.`Protocol` {
-}
+            var arguments: Arguments { (left, right) }
+        }
 
-extension FallibleEffect {
-    typealias Value = String
+        struct Handler: Effect.Handler.`Protocol` {
+            typealias Handled = Addition
 
-    struct Failure: Swift.Error, Equatable {
-        let reason: String
+            func handle(
+                _ effect: borrowing Addition,
+                continuation: consuming Effect.Continuation.One<Int, Addition.Failure>
+            ) async {
+                if effect.left < 0 {
+                    await continuation.resume(throwing: .negativeInput(effect.left))
+                } else {
+                    await continuation.resume(returning: effect.left + effect.right)
+                }
+            }
+        }
+
+        static func handle<H: Effect.Handler.`Protocol`>(
+            _ effect: borrowing H.Handled,
+            using handler: borrowing H,
+            continuation: consuming Effect.Continuation.One<H.Handled.Value, H.Handled.Failure>
+        ) async {
+            await handler.handle(effect, continuation: continuation)
+        }
+
+        static func arguments<E: Effect.`Protocol`>(_ effect: borrowing E) -> E.Arguments
+        where E.Arguments: Copyable {
+            effect.arguments
+        }
     }
 }
 
-@Suite
-struct `Effect.Protocol Tests` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
-
+extension Effect.`Effects describe handler requests` {
     @Test
-    func `simple effect with void arguments`() {
-        let effect = SimpleEffect()
+    func `A handler accepts default void arguments and an infallible result`() async {
+        let results = Effect.`Continuations deliver results`.Recorder<String>()
+        let continuation = Effect.Continuation.one { (result: Result<String, Never>) async in
+            switch result {
+            case .success(let value): await results.append(value)
+            }
+        }
 
-        let args: Void = effect.arguments
-        _ = args
+        await Self.handle(Self.Ping(), using: Self.PingHandler(), continuation: continuation)
+
+        #expect(await results.values == ["pong"])
     }
 
     @Test
-    func `effect with custom arguments`() {
-        let effect = EffectWithArguments(x: 10, y: 20)
+    func `Generic argument access preserves the request fields`() {
+        let request = Self.Addition(left: 10, right: 20)
+        let arguments = Self.arguments(request)
 
-        #expect(effect.arguments.x == 10)
-        #expect(effect.arguments.y == 20)
+        #expect(arguments.left == 10)
+        #expect(arguments.right == 20)
     }
 
-    @Test
-    func `effect with typed failure`() {
+    @Test(arguments: [10, -10])
+    func `Generic handler dispatch delivers the declared value or typed failure`(_ left: Int) async {
+        let results = Effect.`Continuations deliver results`.Recorder<Result<Int, Self.Addition.Failure>>()
+        let continuation = Effect.Continuation.one { (result: Result<Int, Self.Addition.Failure>) async in
+            await results.append(result)
+        }
 
-        let _: FallibleEffect.Failure.Type = FallibleEffect.Failure.self
-        let error = FallibleEffect.Failure(reason: "test")
-        #expect(error.reason == "test")
-    }
+        await Self.handle(
+            Self.Addition(left: left, right: 20),
+            using: Self.Handler(),
+            continuation: continuation
+        )
 
-    @Test
-    func `effect is Sendable`() {
-
-        func requiresSendable<T: Sendable>(_: T.Type) {}
-        requiresSendable(SimpleEffect.self)
-        requiresSendable(EffectWithArguments.self)
-        requiresSendable(FallibleEffect.self)
+        let expected: Result<Int, Self.Addition.Failure> = left < 0
+            ? .failure(.negativeInput(left))
+            : .success(left + 20)
+        #expect(await results.values == [expected])
     }
 }
