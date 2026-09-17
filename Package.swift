@@ -17,17 +17,11 @@ let package = Package(
         .library(name: "Effect Foundation Integration", targets: ["Effect Foundation Integration"]),
         .library(name: "Effect Test Support", targets: ["Effect Test Support"]),
     ],
-    dependencies: [
-
-        .package(url: "https://github.com/swift-atoms/swift-equation.git", branch: "main"),
-        .package(url: "https://github.com/swift-atoms/swift-hash.git", branch: "main"),
-],
+    dependencies: [],
     targets: [
         .target(
             name: "Effect",
-            dependencies: [
-                .product(name: "Hash", package: "swift-hash"),
-            ],
+            dependencies: [],
             path: "Sources/Effect"
         ),
         
@@ -53,24 +47,6 @@ let package = Package(
                 .target(name: "Effect Foundation Integration"),
             ],
             path: "Tests/Effect Tests"
-        ),
-        .testTarget(
-            name: "Consolidated Effect Equation Tests",
-            dependencies: [
-
-                .target(name: "Effect"),
-                .product(name: "Equation", package: "swift-equation"),
-            ],
-            path: "Tests/Consolidated swift-effect-equation"
-        ),
-        .testTarget(
-            name: "Consolidated Effect Hash Tests",
-            dependencies: [
-
-                .target(name: "Effect"),
-                .product(name: "Hash", package: "swift-hash"),
-            ],
-            path: "Tests/Consolidated swift-effect-hash"
         ),
     ],
     swiftLanguageModes: [.v6]
