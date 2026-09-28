@@ -17,14 +17,30 @@ let package = Package(
         .library(name: "Effect Foundation Integration", targets: ["Effect Foundation Integration"]),
         .library(name: "Effect Test Support", targets: ["Effect Test Support"]),
     ],
-    dependencies: [],
+    traits: [
+        .trait(name: "Dependency", description: "Absorbed swift-effect-dependency APIs"),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/swift-atoms/swift-dependency.git", branch: "main"),
+
+],
     targets: [
+        .testTarget(
+            name: "Absorbed swift-effect-dependency Tests",
+            dependencies: [
+                .target(name: "Effect"),
+                .product(name: "Dependency", package: "swift-dependency", condition: .when(traits: ["Dependency"])),
+            ],
+            path: "Tests/Absorbed swift-effect-dependency"
+        ),
         .target(
             name: "Effect",
-            dependencies: [],
+            dependencies: [
+                .product(name: "Dependency", package: "swift-dependency", condition: .when(traits: ["Dependency"])),
+            ],
             path: "Sources/Effect"
         ),
-        
+
         .target(
             name: "Effect Foundation Integration",
             dependencies: [
