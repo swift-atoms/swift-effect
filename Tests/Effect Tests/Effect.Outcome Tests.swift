@@ -4,7 +4,7 @@ import Testing
 extension Effect {
     @Suite
     struct `Outcomes preserve result distinctions` {
-        enum Failure: Swift.Error, Hashable {
+        enum Failure: Swift::Error, Hashable {
             case rejected(Int)
         }
 

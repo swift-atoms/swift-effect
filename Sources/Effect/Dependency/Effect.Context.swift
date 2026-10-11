@@ -24,7 +24,7 @@ extension Effect.Context {
 
 extension Effect.Context {
 
-    public static func with<T, E: Swift.Error>(
+    public static func with<T, E: Swift::Error>(
         _ modify: (inout Handlers) -> Void,
         operation: () throws(E) -> T
     ) throws(E) -> T {
@@ -42,7 +42,7 @@ extension Effect.Context {
 extension Effect.Context {
 
     nonisolated(nonsending)
-        public static func with<T, E: Swift.Error>(
+        public static func with<T, E: Swift::Error>(
             _ modify: (inout Handlers) -> Void,
             operation: nonisolated(nonsending) () async throws(E) -> T
         ) async throws(E) -> T

@@ -4,7 +4,7 @@ public protocol __EffectProtocol: ~Copyable {
 
     associatedtype Value: ~Copyable
 
-    associatedtype Failure: Swift.Error = Never
+    associatedtype Failure: Swift::Error = Never
 
     var arguments: Arguments { borrowing get }
 }

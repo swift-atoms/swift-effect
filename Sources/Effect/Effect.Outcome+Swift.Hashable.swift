@@ -1,5 +1,5 @@
-extension Effect.Outcome: Swift.Hashable
-where Value: Swift.Hashable & ~Copyable, Failure: Swift.Hashable {
+extension Effect.Outcome: Swift::Hashable
+where Value: Swift::Hashable & ~Copyable, Failure: Swift::Hashable {
 
     public borrowing func hash(into hasher: inout Hasher) {
         switch self {

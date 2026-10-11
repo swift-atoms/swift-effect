@@ -5,26 +5,16 @@ import Testing
 extension Effect {
     @Suite
     struct `Continuations deliver results` {
-        enum Failure: Swift.Error, Hashable {
+        enum Failure: Swift::Error, Hashable {
             case rejected(Int)
         }
 
         actor Recorder<Value: Sendable> {
             private(set) var values: [Value] = []
-
-            func append(_ value: Value) {
-                values.append(value)
-            }
         }
 
         final class Counter: Sendable {
             private let storage = Mutex(0)
-
-            var value: Int { storage.withLock { $0 } }
-
-            func increment() {
-                storage.withLock { $0 += 1 }
-            }
         }
 
         final class Capture: Sendable {
@@ -80,6 +70,22 @@ extension Effect {
         static func discard(_ continuation: consuming Effect.Continuation.One<Int, Never>) {
             _ = consume continuation
         }
+    }
+}
+
+extension Effect.`Continuations deliver results`.Recorder {
+
+    func append(_ value: Value) {
+        values.append(value)
+    }
+}
+
+extension Effect.`Continuations deliver results`.Counter {
+
+    var value: Int { storage.withLock { $0 } }
+
+    func increment() {
+        storage.withLock { $0 += 1 }
     }
 }
 

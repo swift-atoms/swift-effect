@@ -1,6 +1,6 @@
 extension Effect {
 
-    public enum Outcome<Value: ~Copyable, Failure: Swift.Error>: ~Copyable {
+    public enum Outcome<Value: ~Copyable, Failure: Swift::Error>: ~Copyable {
 
         case resumed(Value)
 
@@ -10,9 +10,9 @@ extension Effect {
     }
 }
 
-extension Effect.Outcome: Swift.Copyable where Value: Swift.Copyable {}
+extension Effect.Outcome: Swift::Copyable where Value: Swift::Copyable {}
 
-extension Effect.Outcome: Swift.Sendable where Value: Swift.Sendable & ~Copyable, Failure: Swift.Sendable {}
+extension Effect.Outcome: Swift::Sendable where Value: Swift::Sendable & ~Copyable, Failure: Swift::Sendable {}
 
 extension Effect.Outcome where Value: Copyable {
 

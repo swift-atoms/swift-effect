@@ -1,5 +1,5 @@
-extension Effect.Outcome: Swift.Equatable
-where Value: Swift.Equatable & ~Copyable, Failure: Swift.Equatable {
+extension Effect.Outcome: Swift::Equatable
+where Value: Swift::Equatable & ~Copyable, Failure: Swift::Equatable {
 
     public static func == (lhs: borrowing Self, rhs: borrowing Self) -> Bool {
         switch lhs {

@@ -24,7 +24,7 @@ extension Effect {
             typealias Arguments = (left: Int, right: Int)
             typealias Value = Int
 
-            enum Failure: Swift.Error, Equatable {
+            enum Failure: Swift::Error, Equatable {
                 case negativeInput(Int)
             }
 

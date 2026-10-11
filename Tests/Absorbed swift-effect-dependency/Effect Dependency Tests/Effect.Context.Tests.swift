@@ -105,7 +105,7 @@ extension Effect::Effect.Context {
 
         @Test
         func `throwing operation propagates error`() {
-            struct Failure: Swift.Error {}
+            struct Failure: Swift::Error {}
 
             do {
                 try Effect::Effect.Context.with { _ in
