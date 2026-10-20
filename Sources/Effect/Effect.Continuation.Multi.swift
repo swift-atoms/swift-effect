@@ -5,8 +5,7 @@ extension Effect.Continuation {
         internal let _resume: @Sendable (sending Result<Value, Failure>) async -> Void
 
         @usableFromInline
-        internal init(_ resume: @escaping @Sendable (sending Result<Value, Failure>) async -> Void)
-        {
+        internal init(_ resume: @escaping @Sendable (sending Result<Value, Failure>) async -> Void) {
             self._resume = resume
         }
     }

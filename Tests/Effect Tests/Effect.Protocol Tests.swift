@@ -101,7 +101,8 @@ extension Effect.`Effects describe handler requests` {
             continuation: continuation
         )
 
-        let expected: Result<Int, Self.Addition.Failure> = left < 0
+        let expected: Result<Int, Self.Addition.Failure> =
+            left < 0
             ? .failure(.negativeInput(left))
             : .success(left + 20)
         #expect(await results.values == [expected])
