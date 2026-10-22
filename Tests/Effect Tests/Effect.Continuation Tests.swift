@@ -61,7 +61,7 @@ extension Effect {
             releases: Counter
         ) -> Effect.Continuation.One<Int, Never> {
             let capture = Capture(releases: releases)
-            return Effect.Continuation.one { [capture] (_: Result<Int, Never>) async in
+            return Effect.Continuation.one { [capture] (_: sending Result<Int, Never>) async in
                 calls.increment()
                 withExtendedLifetime(capture) {}
             }
