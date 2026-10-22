@@ -1,3 +1,5 @@
+import _Concurrency
+
 public protocol __EffectHandler: ~Copyable {
 
     associatedtype Handled: ~Copyable & __EffectProtocol

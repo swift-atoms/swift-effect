@@ -1,3 +1,5 @@
+import _Concurrency
+
 extension Effect {
 
     public enum Perform {}

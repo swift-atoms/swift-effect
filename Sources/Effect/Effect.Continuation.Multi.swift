@@ -1,3 +1,5 @@
+import _Concurrency
+
 extension Effect.Continuation {
 
     public struct Multi<Value, Failure: Swift::Error>: Effect.Continuation.`Protocol`, Sendable {

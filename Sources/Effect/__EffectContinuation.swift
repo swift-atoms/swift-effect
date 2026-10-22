@@ -1,3 +1,5 @@
+import _Concurrency
+
 public protocol __EffectContinuation<Value, Failure>: ~Copyable {
 
     associatedtype Value: ~Copyable

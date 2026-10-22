@@ -1,3 +1,5 @@
+import _Concurrency
+
 extension Effect.Continuation {
 
     public struct One<Value: ~Copyable, Failure: Swift::Error>: ~Copyable, Effect.Continuation.`Protocol`, Sendable {

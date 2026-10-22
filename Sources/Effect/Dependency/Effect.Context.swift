@@ -1,4 +1,5 @@
 #if Dependency
+    import _Concurrency
     public import Dependency
 
     extension Effect {
