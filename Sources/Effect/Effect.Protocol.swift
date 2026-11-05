@@ -1,4 +1,4 @@
-public protocol __EffectProtocol: ~Copyable {
+public protocol __EffectProtocol: ~Copyable, SendableMetatype {
 
     associatedtype Arguments: ~Copyable = Void
 
