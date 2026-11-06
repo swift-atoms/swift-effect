@@ -2,7 +2,9 @@ import Effect
 import Synchronization
 import Testing
 
-extension Effect {
+enum `Effect Tests` {}
+
+extension `Effect Tests` {
     @Suite
     struct `Continuations deliver results` {
         enum Failure: Swift::Error, Hashable {
@@ -73,14 +75,14 @@ extension Effect {
     }
 }
 
-extension Effect.`Continuations deliver results`.Recorder {
+extension `Effect Tests`.`Continuations deliver results`.Recorder {
 
     func append(_ value: Value) {
         values.append(value)
     }
 }
 
-extension Effect.`Continuations deliver results`.Counter {
+extension `Effect Tests`.`Continuations deliver results`.Counter {
 
     var value: Int { storage.withLock { $0 } }
 
@@ -89,7 +91,7 @@ extension Effect.`Continuations deliver results`.Counter {
     }
 }
 
-extension Effect.`Continuations deliver results` {
+extension `Effect Tests`.`Continuations deliver results` {
     @Test
     func `One-shot protocol dispatch transfers and destroys a noncopyable value`() async {
         let values = Self.Recorder<Int>()

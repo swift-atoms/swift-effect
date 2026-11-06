@@ -1,7 +1,7 @@
 import Effect
 import Testing
 
-extension Effect {
+extension `Effect Tests` {
     @Suite
     struct `Effects describe handler requests` {
         struct Ping: Effect.`Protocol` {
@@ -64,10 +64,10 @@ extension Effect {
     }
 }
 
-extension Effect.`Effects describe handler requests` {
+extension `Effect Tests`.`Effects describe handler requests` {
     @Test
     func `A handler accepts default void arguments and an infallible result`() async {
-        let results = Effect.`Continuations deliver results`.Recorder<String>()
+        let results = `Effect Tests`.`Continuations deliver results`.Recorder<String>()
         let continuation = Effect.Continuation.one { (result: Result<String, Never>) async in
             switch result {
             case .success(let value): await results.append(value)
@@ -90,7 +90,7 @@ extension Effect.`Effects describe handler requests` {
 
     @Test(arguments: [10, -10])
     func `Generic handler dispatch delivers the declared value or typed failure`(_ left: Int) async {
-        let results = Effect.`Continuations deliver results`.Recorder<Result<Int, Self.Addition.Failure>>()
+        let results = `Effect Tests`.`Continuations deliver results`.Recorder<Result<Int, Self.Addition.Failure>>()
         let continuation = Effect.Continuation.one { (result: Result<Int, Self.Addition.Failure>) async in
             await results.append(result)
         }

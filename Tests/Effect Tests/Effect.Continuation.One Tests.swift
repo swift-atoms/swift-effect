@@ -1,7 +1,7 @@
 import Effect
 import Testing
 
-extension Effect.`Continuations deliver results` {
+extension `Effect Tests`.`Continuations deliver results` {
     @Test
     func `One-shot value delivery awaits its callback`() async {
         let values = Self.Recorder<String>()

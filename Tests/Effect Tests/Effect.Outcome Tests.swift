@@ -1,7 +1,7 @@
 import Effect
 import Testing
 
-extension Effect {
+extension `Effect Tests` {
     @Suite
     struct `Outcomes preserve result distinctions` {
         enum Failure: Swift::Error, Hashable {
@@ -18,7 +18,7 @@ extension Effect {
     }
 }
 
-extension Effect.`Outcomes preserve result distinctions` {
+extension `Effect Tests`.`Outcomes preserve result distinctions` {
     @Test(arguments: [Result<Int, Failure>.success(42), .failure(.rejected(7))])
     func `Result conversion preserves the branch and payload`(_ result: Result<Int, Failure>) {
         let outcome = Effect.Outcome(result)

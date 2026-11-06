@@ -1,7 +1,7 @@
 import Effect
 import Testing
 
-extension Effect.`Continuations deliver results` {
+extension `Effect Tests`.`Continuations deliver results` {
     @Test
     func `Multi-shot delivery preserves the order of awaited calls`() async {
         let values = Self.Recorder<Int>()
