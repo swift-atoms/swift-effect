@@ -67,3 +67,51 @@ extension Effect.Outcome where Value: ~Copyable {
         }
     }
 }
+
+extension Effect.Outcome: Swift::Equatable
+where Value: Swift::Equatable & ~Copyable, Failure: Swift::Equatable {
+
+    public static func == (lhs: borrowing Self, rhs: borrowing Self) -> Bool {
+        switch lhs {
+        case .resumed(let lhs):
+            switch rhs {
+            case .resumed(let rhs): return lhs == rhs
+            case .threw: return false
+            case .aborted: return false
+            }
+
+        case .threw(let lhs):
+            switch rhs {
+            case .threw(let rhs): return lhs == rhs
+            case .resumed: return false
+            case .aborted: return false
+            }
+
+        case .aborted:
+            switch rhs {
+            case .aborted: return true
+            case .resumed: return false
+            case .threw: return false
+            }
+        }
+    }
+}
+
+extension Effect.Outcome: Swift::Hashable
+where Value: Swift::Hashable & ~Copyable, Failure: Swift::Hashable {
+
+    public borrowing func hash(into hasher: inout Hasher) {
+        switch self {
+        case .resumed(let value):
+            hasher.combine(0)
+            value.hash(into: &hasher)
+
+        case .threw(let error):
+            hasher.combine(1)
+            error.hash(into: &hasher)
+
+        case .aborted:
+            hasher.combine(2)
+        }
+    }
+}
