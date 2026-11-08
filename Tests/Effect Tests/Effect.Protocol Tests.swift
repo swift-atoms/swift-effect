@@ -8,7 +8,7 @@ extension `Effect Tests` {
             typealias Value = String
         }
 
-        struct PingHandler: Effect.Handler.`Protocol` {
+        fileprivate struct PingHandler: Effect.Handler.`Protocol` {
             typealias Handled = Ping
 
             func handle(
