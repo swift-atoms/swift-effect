@@ -34,7 +34,7 @@
     }
 
     extension Effect::Effect.Context {
-        @Suite("Effect.Context")
+        @Suite
         struct Test {
 
             @Test
@@ -134,7 +134,7 @@
     }
 
     extension Effect::Effect.Context.Handlers {
-        @Suite("Effect.Context.Handlers")
+        @Suite
         struct Test {
 
             @Test
