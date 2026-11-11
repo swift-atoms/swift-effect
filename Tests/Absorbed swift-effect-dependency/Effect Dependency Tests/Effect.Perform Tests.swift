@@ -18,8 +18,8 @@
     }
 
     extension `Effect.Perform Tests`.Test.Constant {
-        struct Infallible: Effect.`Protocol`, EffectWithHandler {}
-        struct Fallible: Effect.`Protocol`, EffectWithHandler {}
+        struct Infallible: Effect.`Protocol`, Effect.Handled {}
+        struct Fallible: Effect.`Protocol`, Effect.Handled {}
     }
 
     extension `Effect.Perform Tests`.Test.Constant.Infallible {
@@ -53,8 +53,8 @@
     }
 
     extension `Effect.Perform Tests`.Test.Probe {
-        struct Infallible: Effect.`Protocol`, EffectWithHandler {}
-        struct Fallible: Effect.`Protocol`, EffectWithHandler {}
+        struct Infallible: Effect.`Protocol`, Effect.Handled {}
+        struct Fallible: Effect.`Protocol`, Effect.Handled {}
 
         static func observe<E: Effect.`Protocol`>(
             _ effect: E.Type

@@ -9,7 +9,7 @@
             _ effect: E
         ) async throws(E.Failure) -> E.Value
         where
-            E: EffectWithHandler,
+            E: Effect.Handled,
             E.Value: Copyable,
             E.HandlerKey.Value: Copyable
         {
@@ -53,7 +53,7 @@
             _ effect: E
         ) async -> E.Value
         where
-            E: EffectWithHandler,
+            E: Effect.Handled,
             E.Failure == Never,
             E.Value: Copyable,
             E.HandlerKey.Value: Copyable
