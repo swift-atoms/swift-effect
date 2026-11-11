@@ -1,0 +1,58 @@
+#if Dependency
+    import Synchronization
+
+    extension Effect.Perform {
+
+        @usableFromInline
+        final class Dispatch: @unchecked Sendable {
+            private let state: Mutex<State>
+
+            @usableFromInline
+            init() {
+                self.state = Mutex(.pending)
+            }
+        }
+    }
+
+    extension Effect.Perform.Dispatch {
+
+        @usableFromInline
+        func store(_ task: Task<Void, Never>) {
+            let cancelImmediately = state.withLock { current -> Bool in
+                switch current {
+                case .pending:
+                    current = .stored(task)
+                    return false
+
+                case .cancelledBeforeStore:
+                    return true
+
+                case .stored:
+
+                    return false
+                }
+            }
+            if cancelImmediately {
+                task.cancel()
+            }
+        }
+
+        @usableFromInline
+        func cancel() {
+            let taskToCancel = state.withLock { current -> Task<Void, Never>? in
+                switch current {
+                case .pending:
+                    current = .cancelledBeforeStore
+                    return nil
+
+                case .stored(let task):
+                    return task
+
+                case .cancelledBeforeStore:
+                    return nil
+                }
+            }
+            taskToCancel?.cancel()
+        }
+    }
+#endif

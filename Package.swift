@@ -29,6 +29,7 @@ let package = Package(
             name: "Absorbed swift-effect-dependency Tests",
             dependencies: [
                 .target(name: "Effect"),
+                .target(name: "Effect Test Support"),
                 .product(name: "Dependency", package: "swift-dependency", condition: .when(traits: ["Dependency"])),
             ],
             path: "Tests/Absorbed swift-effect-dependency"
